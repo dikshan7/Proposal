@@ -1,6 +1,6 @@
 // ====== YOUR SETTINGS (edit these two lines) ======
 const HER_NAME = "";            // e.g. "Anisha". Leave "" to show "my love"
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAuFF6h7HRx0G55zeH5-70ajU5M8cYWQzZ2tSpa-E6iItzZBRLGGgG43vGsj5-Nqtcig/exec";
+const ACCESS_KEY = "8497df51-ef16-4c12-a73f-bc3ad57400ae";   // from web3forms.com (free)
 // ==================================================
 
 const $ = (id) => document.getElementById(id);
@@ -159,21 +159,31 @@ form.addEventListener("submit", async (e) => {
   const date = $("date").value, time = $("time").value;
   const activity = form.activity.value, custom = $("custom").value.trim();
   if (activity === "Something else" && !custom) return showError("Tell me your idea in the box, or pick another option.");
-  if (!SCRIPT_URL || SCRIPT_URL.startsWith("PASTE_")) {
-    return showError("The email link is not connected yet. (Owner: add your Apps Script URL in script.js.)");
+  if (!ACCESS_KEY || ACCESS_KEY.startsWith("PASTE_")) {
+    return showError("The email link is not connected yet. (Owner: add your Web3Forms key in script.js.)");
   }
 
   sendBtn.disabled = true;
   sendBtn.textContent = "Sending…";
+  const summary = prettyDate(date) + " at " + prettyTime(time) + " · " + (custom || activity);
   try {
-    // text/plain avoids a browser pre-check that Apps Script does not answer
-    await fetch(SCRIPT_URL, {
+    const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ date, time, activity, custom }),
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: ACCESS_KEY,
+        subject: "💗 Tihar date plan from her",
+        from_name: "Tihar proposal site",
+        message: "She said YES! 💗",
+        Date: prettyDate(date),
+        Time: prettyTime(time),
+        Activity: activity,
+        "Her own idea": custom || "-",
+      }),
     });
-    $("summary").textContent = prettyDate(date) + " at " + prettyTime(time) + " · " + (custom || activity);
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "failed");
+    $("summary").textContent = summary;
     show("done");
     floatHearts(18);
   } catch (_) {
