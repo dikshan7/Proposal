@@ -48,11 +48,81 @@ const STAGES = [
 ];
 // Each page can also use its own GIF, for example: { ..., gif: "images/sad1.gif" }
 const LOOP_START = 1;           // after the last page, return to page number 2
-let stage = 0;
+let stage = 0, noCount = 0, dodgesLeft = 0, lastDodge = 0;
+let lastPtr = { x: innerWidth / 2, y: innerHeight / 2 };
+const slot = $("no-slot");
+// How many times "No" runs away on each page before she can catch it.
+const DODGES_MOUSE = 4, DODGES_TOUCH = 2;
+const YES_GROWTH = 0.4;         // YES gets this much bigger with every No
+
+function unfly() {              // put the No button back in its normal place
+  if (no.classList.contains("flying")) {
+    slot.appendChild(no);
+    no.classList.remove("flying");
+    no.style.left = no.style.top = "";
+  }
+  slot.style.width = slot.style.height = "";
+}
+
+function dodge() {
+  const now = Date.now();
+  if (now - lastDodge < 250 || dodgesLeft <= 0) return;
+  lastDodge = now; dodgesLeft--;
+  const r = no.getBoundingClientRect(), w = r.width, h = r.height;
+  if (!no.classList.contains("flying")) {
+    slot.style.width = w + "px"; slot.style.height = h + "px";   // keep its old space
+    document.body.appendChild(no);                               // so page scaling can't move it
+    no.style.left = r.left + "px"; no.style.top = r.top + "px";
+    no.classList.add("flying"); void no.offsetWidth;
+  }
+  // stay well inside the screen: never touch edges or corners
+  const mx = Math.max(16, innerWidth * 0.06), bot = Math.max(16, innerHeight * 0.06);
+  const minX = mx, maxX = innerWidth - w - mx, minY = Math.max(72, innerHeight * 0.14), maxY = innerHeight - h - bot;
+  const yr = yes.getBoundingClientRect();
+  let best = null, bestScore = -1, any = null;
+  for (let i = 0; i < 50; i++) {
+    const x = minX + Math.random() * Math.max(0, maxX - minX);
+    const y = minY + Math.random() * Math.max(0, maxY - minY);
+    any = { x, y };
+    const cx = x + w / 2, cy = y + h / 2;
+    const overYes = x < yr.right + 14 && x + w > yr.left - 14 && y < yr.bottom + 14 && y + h > yr.top - 14;
+    const inCorner = Math.min(cx, innerWidth - cx) < innerWidth * 0.18 && Math.min(cy, innerHeight - cy) < innerHeight * 0.18;
+    if (overYes || inCorner) continue;
+    const score = Math.hypot(cx - lastPtr.x, cy - lastPtr.y);   // as far from the cursor as possible
+    if (score > bestScore) { bestScore = score; best = { x, y }; }
+  }
+  const t = best || any;
+  no.style.left = t.x + "px"; no.style.top = t.y + "px";
+}
+
+document.addEventListener("pointermove", (e) => {
+  lastPtr = { x: e.clientX, y: e.clientY };
+  if (e.pointerType !== "mouse" || current !== "ask" || dodgesLeft <= 0) return;
+  const r = no.getBoundingClientRect();
+  if (Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) < 110) dodge();
+});
+no.addEventListener("pointerdown", (e) => {
+  lastPtr = { x: e.clientX, y: e.clientY };
+  if (dodgesLeft > 0) { e.preventDefault(); dodge(); }
+});
+no.addEventListener("click", (e) => {
+  if (dodgesLeft > 0) { e.preventDefault(); dodge(); return; }
+  noCount++;
+  stage = stage + 1 >= STAGES.length ? LOOP_START : stage + 1;
+  renderStage();
+});
+addEventListener("resize", () => {
+  if (!no.classList.contains("flying")) return;
+  const r = no.getBoundingClientRect();
+  no.style.left = Math.max(8, Math.min(r.left, innerWidth - r.width - 8)) + "px";
+  no.style.top = Math.max(8, Math.min(r.top, innerHeight - r.height - 8)) + "px";
+});
 
 function renderStage() {
+  unfly();
+  dodgesLeft = matchMedia("(pointer: coarse)").matches ? DODGES_TOUCH : DODGES_MOUSE;
   const s = STAGES[stage], ask = $("ask"), art = $("art"), emoji = $("art-emoji"), gif = $("art-gif");
-  $("intro").hidden = stage > 0;   // the wish is only on the very first page
+  $("intro").hidden = stage > 0 || noCount > 0;   // the wish is only on the very first page
   emoji.textContent = s.art;
   emoji.className = "art-emoji " + s.anim;
   art.classList.toggle("sad", !!s.sad);
@@ -61,19 +131,16 @@ function renderStage() {
   $("question").textContent = s.q;
   $("sub").textContent = s.sub;
   no.textContent = s.no;
-  // YES gets a little bigger with every No, No a little smaller
-  const n = Math.min(stage, 6);
-  yes.style.transform = "scale(" + (1 + n * 0.05) + ")";
-  no.style.transform = "scale(" + (1 - n * 0.04) + ")";
+  // YES grows with every No, as big as the screen safely allows
+  const want = 1 + noCount * YES_GROWTH;
+  const cap = Math.max(1, Math.min(0.9 * innerWidth / yes.offsetWidth, 0.3 * innerHeight / yes.offsetHeight, 5));
+  const sc = Math.min(want, cap);
+  yes.style.transform = "scale(" + sc.toFixed(3) + ")";
+  yes.style.margin = ((sc - 1) * yes.offsetHeight / 2).toFixed(1) + "px 0";
+  $("actions").classList.toggle("stack", sc > 1.2);
   ask.classList.remove("turn"); void ask.offsetWidth; ask.classList.add("turn");
   if (typeof fit === "function") fit();
 }
-no.addEventListener("click", () => {
-  stage = stage + 1 >= STAGES.length ? LOOP_START : stage + 1;
-  renderStage();
-  if (floatSadHeartsOK) floatHearts(3);
-});
-const floatSadHeartsOK = true;
 
 /* ---------- screens + "never scroll" fitting ---------- */
 const SCREENS = ["ask", "plan", "step-date", "step-time", "step-activity", "done"];
@@ -92,6 +159,7 @@ function fit() {
 }
 function show(id) {
   current = id;
+  if (id !== "ask") unfly();
   SCREENS.forEach((s) => ($(s).hidden = s !== id));
   document.querySelectorAll(".error").forEach((e) => (e.hidden = true));
   fit();

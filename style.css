@@ -109,3 +109,10 @@ legend{font-weight:600;font-size:.95rem;margin-bottom:.6rem;padding:0}
 #intro .wish{margin-bottom:.8rem}
 #ask .art{height:120px}
 #ask .art-emoji{font-size:4.6rem}
+
+/* YES grows, NO runs away */
+.btn.yes{position:relative;z-index:3;transform-origin:center;transition:transform .45s cubic-bezier(.3,1.4,.5,1),margin .45s ease,box-shadow .2s,background .2s}
+.btn.no{position:relative;z-index:4}
+.no-slot{display:inline-block}
+.btn.no.flying{position:fixed;z-index:6;touch-action:none;margin:0;transition:left .38s cubic-bezier(.3,1.3,.5,1),top .38s cubic-bezier(.3,1.3,.5,1),box-shadow .2s}
+.actions.stack{flex-direction:column}
