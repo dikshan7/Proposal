@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Tihar, my love</title>
+<meta name="theme-color" content="#FCE4EC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪔%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="diya" viewBox="0 0 80 70">
+    <ellipse cx="40" cy="22" rx="14" ry="22" fill="#FFDCA0" opacity=".35"/>
+    <path d="M40 4c7 8 9 15 0 24-9-9-7-16 0-24z" fill="#FFDCA0"/>
+    <path d="M40 12c3 4 4 8 0 12-4-4-3-8 0-12z" fill="#fff6dc"/>
+    <path d="M6 34h68c0 18-14 30-34 30S6 52 6 34z" fill="#D96C91"/>
+    <path d="M6 34h68" stroke="#E9B9C9" stroke-width="3" stroke-linecap="round"/>
+    <path d="M22 46q18 8 36 0" stroke="#FFDCA0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="lights" aria-hidden="true"></div>
+<div class="petals" aria-hidden="true"></div>
+<div class="hearts" aria-hidden="true"></div>
+
+<main>
+  <!-- Screen 1: only the question (changes on every No) -->
+  <section id="ask" class="screen">
+    <div id="intro">
+      <p class="greet">Happy Tihar, <span id="her-name">my love</span> ♡</p>
+      <p class="wish">May this Tihar fill your heart with happiness and your days with love. Among all the lights this Tihar, you will always be my favorite.</p>
+    </div>
+    <div class="art" id="art" aria-hidden="true"><span class="art-emoji" id="art-emoji"></span><span class="tears"><i></i><i></i></span><img class="art-gif" id="art-gif" alt="" hidden></div>
+    <h2 class="question" id="question" aria-live="polite"></h2>
+    <p class="sub" id="sub"></p>
+    <div class="actions" id="actions">
+      <button type="button" class="btn yes" id="yes">YES! 💕</button>
+      <button type="button" class="btn no" id="no">No 🙈</button>
+    </div>
+  </section>
+
+  <!-- Screen 2: celebration -->
+  <section id="plan" class="screen" hidden>
+    <svg class="diya-hero" aria-hidden="true"><use href="#diya"/></svg>
+    <h1>Yay! You just made my Tihar extra special. 💗</h1>
+    <p class="wish">Every diya will shine a little brighter tonight because of you.</p>
+    <button type="button" class="btn yes" id="to-plan">Let’s plan our date 💌</button>
+  </section>
+
+  <form id="date-form" novalidate>
+    <!-- Screen 3: day -->
+    <section id="step-date" class="screen" hidden>
+      <h1>Which day suits you?</h1>
+      <p class="wish">Any day in November works for me.</p>
+      <div class="card">
+        <label class="field">Pick a day
+          <input type="date" id="date" name="date" min="2026-11-01" max="2026-11-30" value="2026-11-01" required>
+        </label>
+      </div>
+      <p class="error" hidden role="alert"></p>
+      <button type="button" class="btn yes big" data-next="step-time">Next 💕</button>
+    </section>
+
+    <!-- Screen 4: time -->
+    <section id="step-time" class="screen" hidden>
+      <h1>And what time?</h1>
+      <p class="wish">Pick a time, or tap one below.</p>
+      <div class="card">
+        <label class="field">Time
+          <input type="time" id="time" name="time" value="18:00" required>
+        </label>
+        <div class="chips">
+          <button type="button" class="chip" data-t="17:00">5:00 PM</button>
+          <button type="button" class="chip" data-t="18:00">6:00 PM</button>
+          <button type="button" class="chip" data-t="19:00">7:00 PM</button>
+          <button type="button" class="chip" data-t="20:00">8:00 PM</button>
+        </div>
+      </div>
+      <p class="error" hidden role="alert"></p>
+      <button type="button" class="btn yes big" data-next="step-activity">Next 💕</button>
+      <button type="button" class="btn no big" data-back="step-date">Back</button>
+    </section>
+
+    <!-- Screen 5: activity -->
+    <section id="step-activity" class="screen" hidden>
+      <h1>What shall we do?</h1>
+      <fieldset>
+        <legend class="sr">Choose an activity</legend>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="activity" value="Dinner together" checked><span>🍽️ Dinner together</span></label>
+          <label class="choice"><input type="radio" name="activity" value="A walk under the lights"><span>🪔 A walk under the lights</span></label>
+          <label class="choice"><input type="radio" name="activity" value="Snacks and a cozy evening"><span>🍡 Snacks and a cozy evening</span></label>
+          <label class="choice"><input type="radio" name="activity" value="Watching a movie"><span>🎬 Watching a movie</span></label>
+          <label class="choice"><input type="radio" name="activity" value="Something else"><span>✨ Something else</span></label>
+        </div>
+        <label class="field custom" id="custom-wrap" hidden>Tell me your idea
+          <input type="text" id="custom" name="custom" maxlength="200" placeholder="Anything you like">
+        </label>
+      </fieldset>
+      <p class="error" hidden role="alert"></p>
+      <button type="submit" class="btn yes big" id="send">Send my plan 💌</button>
+      <button type="button" class="btn no big" data-back="step-time">Back</button>
+    </section>
+  </form>
+
+  <!-- Screen 3: confirmation -->
+  <section id="done" class="screen" hidden>
+    <svg class="diya-hero" aria-hidden="true"><use href="#diya"/></svg>
+    <h1>It’s a date. 💗</h1>
+    <p class="wish" id="summary"></p>
+    <p class="wish">I can’t wait. Happy Tihar, my love.</p>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
