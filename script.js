@@ -1,6 +1,6 @@
 // ====== YOUR SETTINGS (edit these two lines) ======
 const HER_NAME = "";            // e.g. "Anisha". Leave "" to show "my love"
-const ACCESS_KEY = "8497df51-ef16-4c12-a73f-bc3ad57400ae";   // from web3forms.com (free)
+const ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_KEY_HERE";   // from web3forms.com (free)
 // ==================================================
 
 const $ = (id) => document.getElementById(id);
@@ -42,7 +42,6 @@ const STAGES = [
   { art: "🪔", anim: "a-dim",    q: "The diyas are waiting for us…", sub: "They only shine their brightest when you say yes.", no: "No 😶" },
   { art: "😭", anim: "a-shake",  sad: true, q: "Pretty please? 🥹", sub: "I will bring your favorite sweets.", no: "No 🙈" },
   { art: "💔", anim: "a-wobble", q: "My heart just cracked a little.", sub: "A date is all it would take to fix it.", no: "Nope 😝" },
-  { art: "🧸", anim: "a-spin",   sad: true, q: "This teddy is begging you.", sub: "He says you have the kindest heart.", no: "No 🙈" },
   { art: "✨", anim: "a-pulse",  q: "The fairy lights are getting dim…", sub: "Only one little word can light them up again.", no: "No 🙊" },
   { art: "💗", anim: "a-bounce", q: "I am not giving up, my love.", sub: "I will ask again and again and again.", no: "No 😜" },
 ];
