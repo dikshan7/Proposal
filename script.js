@@ -1,6 +1,6 @@
 // ====== YOUR SETTINGS (edit these two lines) ======
 const HER_NAME = "";            // e.g. "Anisha". Leave "" to show "my love"
-const ACCESS_KEY = "PASTE_YOUR_WEB3FORMS_KEY_HERE";   // from web3forms.com (free)
+const ACCESS_KEY = "8497df51-ef16-4c12-a73f-bc3ad57400ae";   // from web3forms.com (free)
 // ==================================================
 
 const $ = (id) => document.getElementById(id);
